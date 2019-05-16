@@ -1,0 +1,70 @@
+<?php
+
+/**
+ * @file
+ * Hook implementations for media_wysiwyg module.
+ */
+
+/**
+ * Implements hook_migration_plugins_alter().
+ */
+function media_wysiwyg_migration_plugins_alter(array &$migrations) {
+  // Convert all media_wysiwyg style tokens to entity embeds. We want to target
+  // any formatted text field on a node, which would potentially have one of
+  // these.
+  // Get a list of all long_text fields by bundle.
+  $long_text_fields = [];
+  /** @var \Drupal\Core\Entity\EntityFieldManagerInterface $field_manager */
+  $field_manager = \Drupal::service('entity_field.manager');
+  foreach (array_keys(\Drupal::service('entity_type.bundle.info')->getAllBundleInfo()['node']) as $bundle) {
+    foreach ($field_manager->getFieldDefinitions('node', $bundle) as $field) {
+      if (in_array($field->getType(), ['text', 'text_long', 'text_with_summary'])) {
+        $long_text_fields[$bundle][] = $field->getName();
+      }
+    }
+  }
+
+  // Loop over all migrations. For the node migrations, check to see if they
+  // contain a long text field and if they do, add a processor to them to
+  // transform media_wysiwyg tokens.
+  foreach ($migrations as $id => $migration) {
+    if ($migration['id'] !== 'd7_node') {
+      continue;
+    }
+    if (preg_match('/.*?:(?<bundle>.*)/', $id, $matches) &&
+      !empty($long_text_fields[$matches['bundle']])) {
+      foreach ($long_text_fields[$matches['bundle']] as $field_name) {
+        if (isset($migration['process'][$field_name])) {
+          $process = _media_wysiwyg_make_associative($migration['process'][$field_name]);
+          $process['media_wysiwyg'] = ['plugin' => 'media_wysiwyg_filter'];
+          $migrations[$id]['process'][$field_name] = $process;
+        }
+      }
+    }
+  }
+}
+
+/**
+ * Ensures that a plugin process mapping is an associative array.
+ *
+ * @param array|string $plugin_process
+ *   The plugin process mapping.
+ *
+ * @return array
+ *   The plugin process mapping as an associative array.
+ */
+function _media_wysiwyg_make_associative($plugin_process) {
+  if (!is_array($plugin_process)) {
+    $plugin_process = [
+      [
+        'plugin' => 'get',
+        'source' => $plugin_process,
+      ],
+    ];
+  }
+  elseif (array_key_exists('plugin', $plugin_process)) {
+    $plugin_process = [$plugin_process];
+  }
+
+  return $plugin_process;
+}

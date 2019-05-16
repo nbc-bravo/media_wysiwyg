@@ -1,0 +1,11 @@
+{
+  "name": "drupal/media_wysiwyg",
+  "type": "drupal-module",
+  "description": "Migrates media_wysiwyg tokens to entity_embed ones",
+  "license": "GPL-2.0+",
+  "homepage": "https://github.com/nbc-bravo/media_wysiwyg",
+  "require": {
+    "drupal/core": "~8",
+    "drupal/entity_reference_revisions": "~1.3"
+  }
+}

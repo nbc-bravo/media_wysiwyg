@@ -1,0 +1,7 @@
+name: Media WYSIWYG
+type: module
+description: Migrates media_wysiwyg tokens to entity_embed ones
+package: Custom
+core: 8.x
+dependencies:
+  - drupal:migrate
