@@ -51,7 +51,7 @@ class MediaWysiwygFilter extends ProcessPluginBase {
     $replacement_template = <<<'TEMPLATE'
 <drupal-entity
   data-embed-button="media"
-  data-entity-embed-display="view_mode:media.full"
+  data-entity-embed-display="view_mode:media.%s"
   data-entity-type="media"
   data-entity-id="%s"></drupal-entity>
 TEMPLATE;
@@ -61,7 +61,7 @@ TEMPLATE;
       $decoder = new JsonDecode(TRUE);
       try {
         $tag_info = $decoder->decode($matches['tag_info'], JsonEncoder::FORMAT);
-        return sprintf($replacement_template, $tag_info['fid']);
+        return sprintf($replacement_template, $tag_info['view_mode'], $tag_info['fid']);
       }
       catch (NotEncodableValueException $e) {
         // There was an error decoding the JSON. Remove code.

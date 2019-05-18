@@ -1,0 +1,4 @@
+services:
+  plugin.manager.media_wysiwyg:
+    class: Drupal\media_wysiwyg\MediaWysiwygPluginManager
+    parent: default_plugin_manager
