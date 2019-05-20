@@ -1,6 +1,6 @@
 {
   "name": "nbc-bravo/media_wysiwyg",
-  "type": "drupal-module",
+  "type": "drupal-module-nbc",
   "description": "Migrates media_wysiwyg tokens to entity_embed ones",
   "license": "GPL-2.0+",
   "homepage": "https://github.com/nbc-bravo/media_wysiwyg",
