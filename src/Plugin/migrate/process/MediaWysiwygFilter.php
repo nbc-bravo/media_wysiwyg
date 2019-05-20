@@ -37,8 +37,8 @@ use Symfony\Component\Serializer\Exception\NotEncodableValueException;
  *     plugin: media_wysiwyg_filter
  * @endcode
  *
- *   id = "media_wysiwyg_filter"
  * @MigrateProcessPlugin(
+ *   id = "media_wysiwyg_filter"
  * )
  */
 class MediaWysiwygFilter extends ProcessPluginBase {

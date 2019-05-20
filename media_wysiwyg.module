@@ -6,6 +6,7 @@
  */
 
 use Drupal\Component\Plugin\Exception\PluginException;
+use Drupal\migrate\Exception\RequirementsException;
 
 /**
  * Implements hook_migration_plugins_alter().
@@ -30,6 +31,17 @@ function media_wysiwyg_migration_plugins_alter(array &$migrations) {
   $field_instance_migration = \Drupal::service('plugin.manager.migration')
     ->createStubMigration($definition)
     ->getSourcePlugin();
+
+  try {
+    $field_instance_migration->checkRequirements();
+  }
+  catch (RequirementsException $e) {
+    // This exception happens when we run migrations with migrate:import or
+    // check the status with migrate:update. We just we need to run the
+    // code below when we are generating migrations with migrate:upgrade so
+    // it is safe to just return here if we reach to this point.
+    return;
+  }
 
   /** @var \Drupal\migrate\Row $row */
   foreach ($field_instance_migration as $row) {
